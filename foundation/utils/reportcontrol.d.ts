@@ -6,7 +6,7 @@ declare type ReportControlAttributes = {
     rptID?: string | null;
     indexed?: string | null;
     bufTime?: string | null;
-    intPd?: string | null;
+    intgPd?: string | null;
 };
 declare type TrgOpsAttributes = {
     dchg?: string | null;
@@ -32,4 +32,18 @@ export declare function updateTrgOps(trgOps: Element, attributes: TrgOpsAttribut
 export declare function updateReportControl(reportControl: Element, attributes: ReportControlAttributes): Update[];
 /** @returns action to update max clients in ReportControl element */
 export declare function updateMaxClients(reportControl: Element, max: string | null): Remove | Update | Insert | null;
+/** Function processing ReportControl creation
+ * @parent Parent element such as `LN0`, `LN`, `LDevice`, `AccessPoint` and `IED`
+ * @attributes ReportControl, TrgOps and OptFields elements attributes. Missing and required
+ *             attributes are set to their defaults.
+ * @option allow to overwrite `confRev` and `max` clients
+ * @returns Action object adding new `ReportControl` to [[`parent`]] element
+ * */
+export declare function addReportControl(parent: Element, attributes?: {
+    rpt: ReportControlAttributes;
+    trgOps: TrgOpsAttributes;
+    optFields: OptFieldsAttributes;
+    confRev?: string;
+    maxClients?: string;
+}): Insert[] | null;
 export {};

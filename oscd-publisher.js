@@ -16382,6 +16382,76 @@ function updateMaxClients(reportControl, max) {
     }
     return { element: rptEnabled, attributes: { max } };
 }
+function uniqueReportControlName(anyLn) {
+    const nameCore = 'newReportControl';
+    const siblingNames = Array.from(anyLn.querySelectorAll('ReportControl')).map(child => { var _a; return (_a = child.getAttribute('name')) !== null && _a !== void 0 ? _a : child.tagName; });
+    if (!siblingNames.length)
+        return `${nameCore}_001`;
+    let newName = '';
+    // eslint-disable-next-line no-plusplus
+    let i = 1;
+    newName = `${nameCore}_${i.toString().padStart(3, '0')}`;
+    while (i < siblingNames.length + 1) {
+        if (!siblingNames.includes(newName))
+            break;
+        i += 1;
+        newName = `${nameCore}_${i.toString().padStart(3, '0')}`;
+    }
+    return newName;
+}
+/** Function processing ReportControl creation
+ * @parent Parent element such as `LN0`, `LN`, `LDevice`, `AccessPoint` and `IED`
+ * @attributes ReportControl, TrgOps and OptFields elements attributes. Missing and required
+ *             attributes are set to their defaults.
+ * @option allow to overwrite `confRev` and `max` clients
+ * @returns Action object adding new `ReportControl` to [[`parent`]] element
+ * */
+function addReportControl(parent, attributes = { rpt: {}, trgOps: {}, optFields: {} }) {
+    const anyLn = parent.tagName === 'LN0' || parent.tagName === 'LN'
+        ? parent
+        : parent.querySelector('LN0, LN');
+    if (!anyLn)
+        return null;
+    if (!attributes.rpt.name)
+        attributes.rpt.name = uniqueReportControlName(anyLn);
+    if (!attributes.rpt.buffered)
+        attributes.rpt.buffered = 'true';
+    if (!attributes.rpt.rptID)
+        attributes.rpt.rptID = '';
+    if (!attributes.rpt.bufTime)
+        attributes.rpt.bufTime = '100';
+    if (attributes.trgOps.period === 'true' && !attributes.rpt.intgPd)
+        attributes.rpt.intgPd = '1000';
+    const confRev = attributes.confRev ? attributes.confRev : '0';
+    if ((attributes.rpt.intgPd && !attributes.trgOps.period) ||
+        attributes.trgOps.period === 'false')
+        attributes.trgOps.period = 'true';
+    const reportControl = createElement$2(anyLn.ownerDocument, 'ReportControl', {
+        ...attributes.rpt,
+        confRev,
+    });
+    if (Object.keys(attributes.trgOps).length) {
+        const trgOps = createElement$2(anyLn.ownerDocument, 'TrgOps', attributes.trgOps);
+        reportControl.insertBefore(trgOps, null);
+    }
+    if (Object.keys(attributes.optFields).length) {
+        const optFields = createElement$2(anyLn.ownerDocument, 'OptFields', attributes.optFields);
+        reportControl.insertBefore(optFields, null);
+    }
+    if (attributes.maxClients) {
+        const rptEnabled = createElement$2(anyLn.ownerDocument, 'RptEnabled', {
+            max: attributes.maxClients,
+        });
+        reportControl.insertBefore(rptEnabled, null);
+    }
+    const actions = [];
+    actions.push({
+        parent: anyLn,
+        node: reportControl,
+        reference: getReference(anyLn, 'ReportControl'),
+    });
+    return actions;
+}
 
 function checkRptEnabledValidity(rptEnabled, input) {
     var _a;
@@ -16599,7 +16669,6 @@ let ReportControlElementEditor = class ReportControlElementEditor extends s$3 {
         label="rptID"
         .maybeValue=${rptID}
         nullable
-        required
         helper="report.rptID"
         @input=${this.onReportControlInputChange}
       ></oscd-textfield
@@ -16940,6 +17009,7 @@ let ReportControlEditor = class ReportControlEditor extends s$3 {
       >${Array.from(this.doc.querySelectorAll('IED')).flatMap(ied => {
             const ieditem = y `<mwc-list-item
             class="listitem header"
+            hasMeta
             noninteractive
             graphic="icon"
             value="${Array.from(ied.querySelectorAll('ReportControl'))
@@ -16951,6 +17021,16 @@ let ReportControlEditor = class ReportControlEditor extends s$3 {
           >
             <span>${ied.getAttribute('name')}</span>
             <mwc-icon slot="graphic">developer_board</mwc-icon>
+            <mwc-icon-button
+              slot="meta"
+              icon="playlist_add"
+              @click=${() => {
+                const insert = addReportControl(ied);
+                if (insert)
+                    this.dispatchEvent(newEditEvent(insert));
+                this.requestUpdate();
+            }}
+            ></mwc-icon-button>
           </mwc-list-item>
           <li divider role="separator"></li>`;
             const reports = Array.from(ied.querySelectorAll('ReportControl')).map(reportCb => y `<mwc-list-item
@@ -17013,6 +17093,10 @@ ReportControlEditor.styles = i$6 `
     }
     mwc-list-item {
       --mdc-list-item-meta-size: 48px;
+    }
+
+    mwc-icon-button[icon='playlist_add'] {
+      pointer-events: all;
     }
 
     data-set-element-editor {

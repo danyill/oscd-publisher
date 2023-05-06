@@ -11,6 +11,8 @@ import type { OscdFilteredList } from '../foundation/components/oscd-filtered-li
 export declare class GseControlEditor extends LitElement {
     /** The document being edited as provided to plugins by [[`OpenSCD`]]. */
     doc: XMLDocument;
+    /** SCL change indicator */
+    editCount: number;
     selectedGseControl?: Element;
     selectedDataSet?: Element | null;
     selectionList: OscdFilteredList;

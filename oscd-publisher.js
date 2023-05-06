@@ -14128,6 +14128,8 @@ function functionaContraintPaths(doc, paths) {
 let DataSetElementEditor = class DataSetElementEditor extends s$3 {
     constructor() {
         super(...arguments);
+        /** SCL change indicator */
+        this.editCount = 0;
         this.someInputDiff = false;
     }
     get name() {
@@ -14350,6 +14352,9 @@ __decorate([
 __decorate([
     e$6({ attribute: false })
 ], DataSetElementEditor.prototype, "element", void 0);
+__decorate([
+    e$6({ type: Number })
+], DataSetElementEditor.prototype, "editCount", void 0);
 __decorate([
     t$2()
 ], DataSetElementEditor.prototype, "name", null);
@@ -16469,6 +16474,8 @@ function checkRptEnabledValidity(rptEnabled, input) {
 let ReportControlElementEditor = class ReportControlElementEditor extends s$3 {
     constructor() {
         super(...arguments);
+        /** SCL change indicator */
+        this.editCount = 0;
         this.optFieldsDiff = false;
         this.trgOpsDiff = false;
         this.reportControlDiff = false;
@@ -16797,6 +16804,9 @@ __decorate([
     e$6({ attribute: false })
 ], ReportControlElementEditor.prototype, "element", void 0);
 __decorate([
+    e$6({ type: Number })
+], ReportControlElementEditor.prototype, "editCount", void 0);
+__decorate([
     t$2()
 ], ReportControlElementEditor.prototype, "optFieldsDiff", void 0);
 __decorate([
@@ -16912,6 +16922,11 @@ const reportIcon = w `<svg style="width:24px;height:24px" viewBox="0 0 24 24">${
 const smvIcon = w `<svg style="width:24px;height:24px" viewBox="0 0 24 24">${pathsSVG.smvIcon}</svg>`;
 
 let ReportControlEditor = class ReportControlEditor extends s$3 {
+    constructor() {
+        super(...arguments);
+        /** SCL change indicator */
+        this.editCount = 0;
+    }
     /** Resets selected Report and its DataSet, if not existing in new doc */
     update(props) {
         super.update(props);
@@ -16985,6 +17000,7 @@ let ReportControlEditor = class ReportControlEditor extends s$3 {
           <data-set-element-editor
             .element=${this.selectedDataSet}
             .showHeader=${false}
+            editCount="${this.editCount}"
           >
             <mwc-icon-button
               slot="change"
@@ -16997,6 +17013,7 @@ let ReportControlEditor = class ReportControlEditor extends s$3 {
         <report-control-element-editor
           .doc=${this.doc}
           .element=${this.selectedReportControl}
+          editCount="${this.editCount}"
         ></report-control-element-editor>
       </div>`;
         return y ``;
@@ -17116,6 +17133,9 @@ ReportControlEditor.styles = i$6 `
 __decorate([
     e$6({ attribute: false })
 ], ReportControlEditor.prototype, "doc", void 0);
+__decorate([
+    e$6({ type: Number })
+], ReportControlEditor.prototype, "editCount", void 0);
 __decorate([
     t$2()
 ], ReportControlEditor.prototype, "selectedReportControl", void 0);
@@ -17492,6 +17512,8 @@ function addGSEControl(parent, attributes = {}) {
 let GseControlElementEditor = class GseControlElementEditor extends s$3 {
     constructor() {
         super(...arguments);
+        /** SCL change indicator */
+        this.editCount = 0;
         this.gSEdiff = false;
         this.gSEControlDiff = false;
     }
@@ -17756,6 +17778,9 @@ __decorate([
     e$6({ attribute: false })
 ], GseControlElementEditor.prototype, "element", void 0);
 __decorate([
+    e$6({ type: Number })
+], GseControlElementEditor.prototype, "editCount", void 0);
+__decorate([
     e$6({ attribute: false })
 ], GseControlElementEditor.prototype, "gSE", null);
 __decorate([
@@ -17778,6 +17803,11 @@ GseControlElementEditor = __decorate([
 ], GseControlElementEditor);
 
 let GseControlEditor = class GseControlEditor extends s$3 {
+    constructor() {
+        super(...arguments);
+        /** SCL change indicator */
+        this.editCount = 0;
+    }
     /** Resets selected GOOSE and its DataSet, if not existing in new doc */
     update(props) {
         super.update(props);
@@ -17848,6 +17878,7 @@ let GseControlEditor = class GseControlEditor extends s$3 {
           <data-set-element-editor
             .element=${this.selectedDataSet}
             .showHeader=${false}
+            editCount="${this.editCount}"
           >
             <mwc-icon-button
               slot="change"
@@ -17861,6 +17892,7 @@ let GseControlEditor = class GseControlEditor extends s$3 {
         <gse-control-element-editor
           .doc=${this.doc}
           .element=${this.selectedGseControl}
+          editCount="${this.editCount}"
         ></gse-control-element-editor>
       </div>`;
         return y ``;
@@ -17981,6 +18013,9 @@ __decorate([
     e$6({ attribute: false })
 ], GseControlEditor.prototype, "doc", void 0);
 __decorate([
+    e$6({ type: Number })
+], GseControlEditor.prototype, "editCount", void 0);
+__decorate([
     t$2()
 ], GseControlEditor.prototype, "selectedGseControl", void 0);
 __decorate([
@@ -18000,6 +18035,11 @@ GseControlEditor = __decorate([
 ], GseControlEditor);
 
 let DataSetEditor = class DataSetEditor extends s$3 {
+    constructor() {
+        super(...arguments);
+        /** SCL change indicator */
+        this.editCount = 0;
+    }
     /** Resets selected GOOSE, if not existing in new doc */
     update(props) {
         if (props.has('doc') && this.selectedDataSet) {
@@ -18024,6 +18064,7 @@ let DataSetEditor = class DataSetEditor extends s$3 {
             return y `<div class="elementeditorcontainer">
         <data-set-element-editor
           .element=${this.selectedDataSet}
+          editCount="${this.editCount}"
         ></data-set-element-editor>
       </div>`;
         return y ``;
@@ -18113,6 +18154,9 @@ __decorate([
     e$6({ attribute: false })
 ], DataSetEditor.prototype, "doc", void 0);
 __decorate([
+    e$6({ type: Number })
+], DataSetEditor.prototype, "editCount", void 0);
+__decorate([
     t$2()
 ], DataSetEditor.prototype, "selectedDataSet", void 0);
 __decorate([
@@ -18126,6 +18170,11 @@ DataSetEditor = __decorate([
 ], DataSetEditor);
 
 let SampledValueControlElementEditor = class SampledValueControlElementEditor extends s$3 {
+    constructor() {
+        super(...arguments);
+        /** SCL change indicator */
+        this.editCount = 0;
+    }
     get sMV() {
         var _a, _b, _c;
         const cbName = this.element.getAttribute('name');
@@ -18343,6 +18392,9 @@ __decorate([
     e$6({ attribute: false })
 ], SampledValueControlElementEditor.prototype, "element", void 0);
 __decorate([
+    e$6({ type: Number })
+], SampledValueControlElementEditor.prototype, "editCount", void 0);
+__decorate([
     e$6({ attribute: false })
 ], SampledValueControlElementEditor.prototype, "sMV", null);
 SampledValueControlElementEditor = __decorate([
@@ -18350,6 +18402,11 @@ SampledValueControlElementEditor = __decorate([
 ], SampledValueControlElementEditor);
 
 let SampledValueControlEditor = class SampledValueControlEditor extends s$3 {
+    constructor() {
+        super(...arguments);
+        /** SCL change indicator */
+        this.editCount = 0;
+    }
     /** Resets selected SMV and its DataSet, if not existing in new doc */
     update(props) {
         super.update(props);
@@ -18423,6 +18480,7 @@ let SampledValueControlEditor = class SampledValueControlEditor extends s$3 {
           <data-set-element-editor
             .element=${this.selectedDataSet}
             .showHeader=${false}
+            editCount="${this.editCount}"
           >
             <mwc-icon-button
               slot="change"
@@ -18435,6 +18493,7 @@ let SampledValueControlEditor = class SampledValueControlEditor extends s$3 {
         <sampled-value-control-element-editor
           .doc=${this.doc}
           .element=${this.selectedSampledValueControl}
+          editCount="${this.editCount}"
         ></sampled-value-control-element-editor>
       </div>`;
         return y ``;
@@ -18540,6 +18599,9 @@ __decorate([
     e$6({ attribute: false })
 ], SampledValueControlEditor.prototype, "doc", void 0);
 __decorate([
+    e$6({ type: Number })
+], SampledValueControlEditor.prototype, "editCount", void 0);
+__decorate([
     t$2()
 ], SampledValueControlEditor.prototype, "selectedSampledValueControl", void 0);
 __decorate([
@@ -18562,6 +18624,8 @@ SampledValueControlEditor = __decorate([
 class PublisherPlugin extends s$3 {
     constructor() {
         super(...arguments);
+        /** SCL change indicator */
+        this.editCount = 0;
         this.publisherType = 'GOOSE';
     }
     render() {
@@ -18604,24 +18668,28 @@ class PublisherPlugin extends s$3 {
       </div>
       <report-control-editor
         .doc=${this.doc}
+        editCount="${this.editCount}"
         class="${o$1({
             hidden: this.publisherType !== 'Report',
         })}"
       ></report-control-editor
       ><gse-control-editor
         .doc=${this.doc}
+        editCount="${this.editCount}"
         class="${o$1({
             hidden: this.publisherType !== 'GOOSE',
         })}"
       ></gse-control-editor
       ><sampled-value-control-editor
         .doc=${this.doc}
+        editCount="${this.editCount}"
         class="${o$1({
             hidden: this.publisherType !== 'SampledValue',
         })}"
       ></sampled-value-control-editor
       ><data-set-editor
         .doc=${this.doc}
+        editCount="${this.editCount}"
         class="${o$1({
             hidden: this.publisherType !== 'DataSet',
         })}"
@@ -18643,6 +18711,9 @@ PublisherPlugin.styles = i$6 `
 __decorate([
     e$6({ attribute: false })
 ], PublisherPlugin.prototype, "doc", void 0);
+__decorate([
+    e$6({ type: Number })
+], PublisherPlugin.prototype, "editCount", void 0);
 __decorate([
     t$2()
 ], PublisherPlugin.prototype, "publisherType", void 0);

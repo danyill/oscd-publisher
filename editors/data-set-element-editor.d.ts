@@ -11,6 +11,8 @@ export declare class DataSetElementEditor extends LitElement {
     doc: XMLDocument;
     /** The element being edited as provided to plugins by [[`OpenSCD`]]. */
     element: Element | null;
+    /** SCL change indicator */
+    editCount: number;
     private get name();
     private get desc();
     private someInputDiff;

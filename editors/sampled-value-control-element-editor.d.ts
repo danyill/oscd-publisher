@@ -9,6 +9,8 @@ export declare class SampledValueControlElementEditor extends LitElement {
     doc: XMLDocument;
     /** The element being edited as provided to plugins by [[`OpenSCD`]]. */
     element: Element;
+    /** SCL change indicator */
+    editCount: number;
     get sMV(): Element | null;
     private renderSmvContent;
     private renderSmvOptsContent;

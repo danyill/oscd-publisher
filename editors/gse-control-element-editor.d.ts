@@ -13,6 +13,8 @@ export declare class GseControlElementEditor extends LitElement {
     doc: XMLDocument;
     /** The element being edited as provided to plugins by [[`OpenSCD`]]. */
     element: Element;
+    /** SCL change indicator */
+    editCount: number;
     get gSE(): Element | null | undefined;
     private gSEdiff;
     private gSEControlDiff;

@@ -10,6 +10,8 @@ import type { OscdFilteredList } from '../foundation/components/oscd-filtered-li
 export declare class ReportControlEditor extends LitElement {
     /** The document being edited as provided to plugins by [[`OpenSCD`]]. */
     doc: XMLDocument;
+    /** SCL change indicator */
+    editCount: number;
     selectedReportControl?: Element;
     selectedDataSet?: Element | null;
     selectionList: OscdFilteredList;

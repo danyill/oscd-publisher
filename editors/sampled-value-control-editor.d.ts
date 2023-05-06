@@ -10,6 +10,8 @@ import type { OscdFilteredList } from '../foundation/components/oscd-filtered-li
 export declare class SampledValueControlEditor extends LitElement {
     /** The document being edited as provided to plugins by [[`OpenSCD`]]. */
     doc: XMLDocument;
+    /** SCL change indicator */
+    editCount: number;
     selectedSampledValueControl?: Element;
     selectedDataSet?: Element | null;
     selectionList: OscdFilteredList;

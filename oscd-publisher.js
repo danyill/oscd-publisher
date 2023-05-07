@@ -13805,7 +13805,7 @@ function removeControlBlock(ctrlBlock) {
     return ctrlBlockRemoveAction.concat(removeDataSet(dataSet));
 }
 
-function createElement$4(doc, tag, attrs) {
+function createElement$5(doc, tag, attrs) {
     const element = doc.createElementNS(doc.documentElement.namespaceURI, tag);
     Object.entries(attrs)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -13909,7 +13909,7 @@ function addFCDAs(dataSet, paths) {
             continue;
         actions.push({
             parent: dataSet,
-            node: createElement$4(dataSet.ownerDocument, 'FCDA', fcdaAttrs),
+            node: createElement$5(dataSet.ownerDocument, 'FCDA', fcdaAttrs),
             reference: null,
         });
     }
@@ -13957,14 +13957,14 @@ function addFCDOs(dataSet, fcPaths) {
             continue;
         actions.push({
             parent: dataSet,
-            node: createElement$4(dataSet.ownerDocument, 'FCDA', fcdaAttrs),
+            node: createElement$5(dataSet.ownerDocument, 'FCDA', fcdaAttrs),
             reference: null,
         });
     }
     return actions;
 }
 
-function createElement$3(doc, tag, attrs) {
+function createElement$4(doc, tag, attrs) {
     const element = doc.createElementNS(doc.documentElement.namespaceURI, tag);
     Object.entries(attrs)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -14030,7 +14030,7 @@ function addDataSet(parent, attributes = {}) {
     // eslint-disable-next-line no-param-reassign
     if (!attributes.name)
         attributes.name = uniqueDataSetName(anyLn);
-    const dataSet = createElement$3(anyLn.ownerDocument, 'DataSet', attributes);
+    const dataSet = createElement$4(anyLn.ownerDocument, 'DataSet', attributes);
     return {
         parent: anyLn,
         node: dataSet,
@@ -16341,7 +16341,7 @@ const maxLength = {
     abstracDaName: 60,
 };
 
-function createElement$2(doc, tag, attrs) {
+function createElement$3(doc, tag, attrs) {
     const element = doc.createElementNS(doc.documentElement.namespaceURI, tag);
     Object.entries(attrs)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -16378,7 +16378,7 @@ function updateMaxClients(reportControl, max) {
     if (!rptEnabled && !max)
         return null;
     if (!rptEnabled && max) {
-        const newRptEnabled = createElement$2(reportControl.ownerDocument, 'RptEnabled', { max });
+        const newRptEnabled = createElement$3(reportControl.ownerDocument, 'RptEnabled', { max });
         return {
             parent: reportControl,
             node: newRptEnabled,
@@ -16431,20 +16431,20 @@ function addReportControl(parent, attributes = { rpt: {}, trgOps: {}, optFields:
     if ((attributes.rpt.intgPd && !attributes.trgOps.period) ||
         attributes.trgOps.period === 'false')
         attributes.trgOps.period = 'true';
-    const reportControl = createElement$2(anyLn.ownerDocument, 'ReportControl', {
+    const reportControl = createElement$3(anyLn.ownerDocument, 'ReportControl', {
         ...attributes.rpt,
         confRev,
     });
     if (Object.keys(attributes.trgOps).length) {
-        const trgOps = createElement$2(anyLn.ownerDocument, 'TrgOps', attributes.trgOps);
+        const trgOps = createElement$3(anyLn.ownerDocument, 'TrgOps', attributes.trgOps);
         reportControl.insertBefore(trgOps, null);
     }
     if (Object.keys(attributes.optFields).length) {
-        const optFields = createElement$2(anyLn.ownerDocument, 'OptFields', attributes.optFields);
+        const optFields = createElement$3(anyLn.ownerDocument, 'OptFields', attributes.optFields);
         reportControl.insertBefore(optFields, null);
     }
     if (attributes.maxClients) {
-        const rptEnabled = createElement$2(anyLn.ownerDocument, 'RptEnabled', {
+        const rptEnabled = createElement$3(anyLn.ownerDocument, 'RptEnabled', {
             max: attributes.maxClients,
         });
         reportControl.insertBefore(rptEnabled, null);
@@ -17274,7 +17274,7 @@ function checkTimeAddressDiff(gSE, attrs, instType) {
     return checkGSEDiff(gSE, timeAttrs, instType);
 }
 /** @returns a new [[`tag`]] element owned by [[`doc`]]. */
-function createElement$1(doc, tag, attrs) {
+function createElement$2(doc, tag, attrs) {
     const element = doc.createElementNS(doc.documentElement.namespaceURI, tag);
     Object.entries(attrs)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -17286,7 +17286,7 @@ function updateGseTimes(gSE, attr) {
     const actions = [];
     if (attr.MinTime !== undefined) {
         if (attr.MinTime !== null) {
-            const newMinTime = createElement$1(gSE.ownerDocument, 'MinTime', {
+            const newMinTime = createElement$2(gSE.ownerDocument, 'MinTime', {
                 unit: 's',
                 multiplier: 'm',
             });
@@ -17303,7 +17303,7 @@ function updateGseTimes(gSE, attr) {
     }
     if (attr.MaxTime !== undefined) {
         if (attr.MaxTime !== null) {
-            const newMaxTime = createElement$1(gSE.ownerDocument, 'MaxTime', {
+            const newMaxTime = createElement$2(gSE.ownerDocument, 'MaxTime', {
                 unit: 's',
                 multiplier: 'm',
             });
@@ -17322,12 +17322,12 @@ function updateGseTimes(gSE, attr) {
 }
 function updateGseAddress(gSE, attrs, instType) {
     const actions = [];
-    const newAddress = createElement$1(gSE.ownerDocument, 'Address', {});
+    const newAddress = createElement$2(gSE.ownerDocument, 'Address', {});
     Object.entries(attrs)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([_, value]) => value !== null)
         .forEach(([type, value]) => {
-        const child = createElement$1(gSE.ownerDocument, 'P', { type });
+        const child = createElement$2(gSE.ownerDocument, 'P', { type });
         if (instType)
             child.setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', `tP_${type}`);
         child.textContent = value;
@@ -17362,8 +17362,8 @@ function updateGSE(gSE, attrs, instType) {
 function addGSE(connectedAp, attributes, options = { pTypes: {} }) {
     var _a, _b;
     const actions = [];
-    const gSE = createElement$1(connectedAp.ownerDocument, 'GSE', attributes);
-    const address = createElement$1(gSE.ownerDocument, 'Address', {});
+    const gSE = createElement$2(connectedAp.ownerDocument, 'GSE', attributes);
+    const address = createElement$2(gSE.ownerDocument, 'Address', {});
     if (!options.pTypes['MAC-Address'])
         // eslint-disable-next-line no-param-reassign
         options.pTypes['MAC-Address'] = mACAddressGenerator(connectedAp.ownerDocument, 'GSE')();
@@ -17374,7 +17374,7 @@ function addGSE(connectedAp, attributes, options = { pTypes: {} }) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([_, value]) => value !== null)
         .forEach(([type, value]) => {
-        const child = createElement$1(gSE.ownerDocument, 'P', { type });
+        const child = createElement$2(gSE.ownerDocument, 'P', { type });
         child.textContent = value;
         address.appendChild(child);
     });
@@ -17388,7 +17388,7 @@ function addGSE(connectedAp, attributes, options = { pTypes: {} }) {
         node: address,
         reference: getReference(gSE, 'Address'),
     });
-    const newMinTime = createElement$1(gSE.ownerDocument, 'MinTime', {
+    const newMinTime = createElement$2(gSE.ownerDocument, 'MinTime', {
         unit: 's',
         multiplier: 'm',
     });
@@ -17398,7 +17398,7 @@ function addGSE(connectedAp, attributes, options = { pTypes: {} }) {
         node: newMinTime,
         reference: getReference(gSE, 'MinTime'),
     });
-    const newMaxTime = createElement$1(gSE.ownerDocument, 'MaxTime', {
+    const newMaxTime = createElement$2(gSE.ownerDocument, 'MaxTime', {
         unit: 's',
         multiplier: 'm',
     });
@@ -17419,7 +17419,7 @@ function connectedAp(parent) {
     return parent.ownerDocument.querySelector(`ConnectedAP[iedName="${iedName}"][apName="${apName}"]`);
 }
 
-function createElement(doc, tag, attrs) {
+function createElement$1(doc, tag, attrs) {
     const element = doc.createElementNS(doc.documentElement.namespaceURI, tag);
     Object.entries(attrs)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -17491,7 +17491,7 @@ function addGSEControl(parent, attributes = {}) {
         attributes.type = 'GOOSE';
     if (!attributes.appId)
         attributes.appId = `${identity(ln0)}>${uniqueGSEControlName(ln0)}`;
-    const gseControl = createElement(ln0.ownerDocument, 'GSEControl', attributes);
+    const gseControl = createElement$1(ln0.ownerDocument, 'GSEControl', attributes);
     const actions = [];
     actions.push({
         parent: ln0,
@@ -18169,11 +18169,72 @@ DataSetEditor = __decorate([
     e$7('data-set-editor')
 ], DataSetEditor);
 
+const sMVselectors = {
+    'MAC-Address': ':scope > Address > P[type="MAC-Address"]',
+    APPID: ':scope > Address > P[type="APPID"]',
+    'VLAN-ID': ':scope > Address > P[type="VLAN-ID"]',
+    'VLAN-PRIORITY': ':scope > Address > P[type="VLAN-PRIORITY"]',
+};
+/** @returns a new [[`tag`]] element owned by [[`doc`]]. */
+function createElement(doc, tag, attrs) {
+    const element = doc.createElementNS(doc.documentElement.namespaceURI, tag);
+    Object.entries(attrs)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([_, value]) => value !== null)
+        .forEach(([name, value]) => element.setAttribute(name, value));
+    return element;
+}
+/** @returns Whether the `sMV`s element attributes or instType has changed */
+function checkSMVDiff(sMV, attributes = { pTypes: {} }) {
+    const pTypeDiff = Object.entries(attributes.pTypes).some(([key, value]) => { var _a, _b; return ((_b = (_a = sMV.querySelector(sMVselectors[key])) === null || _a === void 0 ? void 0 : _a.textContent) !== null && _b !== void 0 ? _b : null) !== value; });
+    if (pTypeDiff)
+        return true;
+    if (attributes.instType === undefined)
+        return false;
+    const instTypeDiff = Object.keys(attributes.pTypes).some(key => {
+        const pType = sMV.querySelector(sMVselectors[key]);
+        if (!pType)
+            return false;
+        const hasInstType = pType.hasAttribute('xsi:type');
+        return hasInstType !== attributes.instType;
+    });
+    return instTypeDiff;
+}
+/** Update function for SMV element's Address field
+ * @sMV the `SMV` element to update the address element of
+ * @attributes pType values `MAC-Address`,`APPID`,`VLAN-ID` or `VLAN-PRIORITY`
+ *           instType whether to add xsi:type attributes for better XML parsing
+ * @return action array to update a `SMV`s `Address` child element
+ */
+function updateSmvAddress(sMV, attributes = { pTypes: {}, instType: false }) {
+    const actions = [];
+    const newAddress = createElement(sMV.ownerDocument, 'Address', {});
+    Object.entries(attributes.pTypes)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([_, value]) => value !== null)
+        .forEach(([type, value]) => {
+        const child = createElement(sMV.ownerDocument, 'P', { type });
+        if (attributes.instType)
+            child.setAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'xsi:type', `tP_${type}`);
+        child.textContent = value;
+        newAddress.appendChild(child);
+    });
+    actions.push({
+        parent: sMV,
+        node: newAddress,
+    });
+    const oldAddress = sMV.querySelector('Address');
+    if (oldAddress)
+        actions.push({ node: oldAddress });
+    return actions;
+}
+
 let SampledValueControlElementEditor = class SampledValueControlElementEditor extends s$3 {
     constructor() {
         super(...arguments);
         /** SCL change indicator */
         this.editCount = 0;
+        this.sMVdiff = false;
     }
     get sMV() {
         var _a, _b, _c;
@@ -18184,6 +18245,33 @@ let SampledValueControlElementEditor = class SampledValueControlElementEditor ex
         return this.element.ownerDocument.querySelector(`:root > Communication > SubNetwork > ` +
             `ConnectedAP[iedName="${iedName}"][apName="${apName}"] > ` +
             `SMV[ldInst="${ldInst}"][cbName="${cbName}"]`);
+    }
+    onSMVInputChange() {
+        var _a, _b, _c;
+        if (Array.from((_a = this.sMVInputs) !== null && _a !== void 0 ? _a : []).some(input => !input.checkValidity())) {
+            this.sMVdiff = false;
+            return;
+        }
+        const pTypes = {};
+        for (const input of (_b = this.sMVInputs) !== null && _b !== void 0 ? _b : [])
+            pTypes[input.label] = input.maybeValue;
+        this.sMVdiff = checkSMVDiff(this.sMV, {
+            pTypes,
+            instType: (_c = this.instType) === null || _c === void 0 ? void 0 : _c.checked,
+        });
+    }
+    saveSMVChanges() {
+        var _a, _b;
+        if (!this.sMV)
+            return;
+        const pTypes = {};
+        for (const input of (_a = this.sMVInputs) !== null && _a !== void 0 ? _a : [])
+            pTypes[input.label] = input.maybeValue;
+        this.dispatchEvent(newEditEvent(updateSmvAddress(this.sMV, {
+            pTypes,
+            instType: (_b = this.instType) === null || _b === void 0 ? void 0 : _b.checked,
+        })));
+        this.onSMVInputChange();
     }
     renderSmvContent() {
         const { sMV } = this;
@@ -18201,12 +18289,13 @@ let SampledValueControlElementEditor = class SampledValueControlElementEditor ex
                     (_c = (_b = (_a = sMV
                         .querySelector(`Address > P[type="${key}"]`)) === null || _a === void 0 ? void 0 : _a.textContent) === null || _b === void 0 ? void 0 : _b.trim()) !== null && _c !== void 0 ? _c : null;
         });
-        return y ` <h3>'publisher.smv.commsetting'</h3>
-      <mwc-formfield label="'connectedap.wizard.addschemainsttype')}"
+        return y ` <div class="content smv">
+      <h3>Communication Settings (SMV)</h3>
+      <mwc-formfield label="connectedap.wizard.addschemainsttype"
         ><mwc-checkbox
           id="instType"
           ?checked="${hasInstType}"
-          disabled
+          @change=${this.onSMVInputChange}
         ></mwc-checkbox></mwc-formfield
       >${Object.entries(attributes).map(([key, value]) => y `<oscd-textfield
             label="${key}"
@@ -18214,8 +18303,15 @@ let SampledValueControlElementEditor = class SampledValueControlElementEditor ex
             .maybeValue=${value}
             pattern="${typePattern[key]}"
             required
-            disabled
-          ></oscd-textfield>`)}`;
+            @input=${this.onSMVInputChange}
+          ></oscd-textfield>`)}<mwc-button
+        class="save"
+        label="save"
+        icon="save"
+        ?disabled=${!this.sMVdiff}
+        @click=${() => this.saveSMVChanges()}
+      ></mwc-button>
+    </div>`;
     }
     renderSmvOptsContent() {
         const [refreshTime, sampleRate, dataSet, security, synchSourceId] = [
@@ -18397,6 +18493,15 @@ __decorate([
 __decorate([
     e$6({ attribute: false })
 ], SampledValueControlElementEditor.prototype, "sMV", null);
+__decorate([
+    t$2()
+], SampledValueControlElementEditor.prototype, "sMVdiff", void 0);
+__decorate([
+    e$4('.content.smv > oscd-textfield')
+], SampledValueControlElementEditor.prototype, "sMVInputs", void 0);
+__decorate([
+    i$3('#instType')
+], SampledValueControlElementEditor.prototype, "instType", void 0);
 SampledValueControlElementEditor = __decorate([
     e$7('sampled-value-control-element-editor')
 ], SampledValueControlElementEditor);

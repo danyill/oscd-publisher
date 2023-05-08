@@ -18229,12 +18229,18 @@ function updateSmvAddress(sMV, attributes = { pTypes: {}, instType: false }) {
     return actions;
 }
 
+/** @returns action array to update all `SmvOps` attributes */
+function updateSmvOpts(smvOpts, attributes) {
+    return { element: smvOpts, attributes };
+}
+
 let SampledValueControlElementEditor = class SampledValueControlElementEditor extends s$3 {
     constructor() {
         super(...arguments);
         /** SCL change indicator */
         this.editCount = 0;
         this.sMVdiff = false;
+        this.smvOptsDiff = false;
     }
     get sMV() {
         var _a, _b, _c;
@@ -18272,6 +18278,30 @@ let SampledValueControlElementEditor = class SampledValueControlElementEditor ex
             instType: (_b = this.instType) === null || _b === void 0 ? void 0 : _b.checked,
         })));
         this.onSMVInputChange();
+    }
+    onSmvOptsInputChange() {
+        var _a, _b, _c;
+        const smvOpts = this.element.querySelector(':scope > SmvOpts');
+        if (Array.from((_a = this.smvOptsInputs) !== null && _a !== void 0 ? _a : []).some(input => !input.checkValidity())) {
+            this.smvOptsDiff = false;
+            return;
+        }
+        const smvOptsAttrs = {};
+        for (const input of (_b = this.smvOptsInputs) !== null && _b !== void 0 ? _b : [])
+            smvOptsAttrs[input.label] = input.maybeValue;
+        this.smvOptsDiff = Array.from((_c = this.smvOptsInputs) !== null && _c !== void 0 ? _c : []).some(input => (smvOpts === null || smvOpts === void 0 ? void 0 : smvOpts.getAttribute(input.label)) !== input.maybeValue);
+    }
+    saveSmvOptsChanges() {
+        var _a;
+        const smvOpts = this.element.querySelector(':scope > SmvOpts');
+        if (!smvOpts)
+            return;
+        const smvOptsAttrs = {};
+        for (const input of (_a = this.smvOptsInputs) !== null && _a !== void 0 ? _a : [])
+            if (smvOpts.getAttribute(input.label) !== input.maybeValue)
+                smvOptsAttrs[input.label] = input.maybeValue;
+        this.dispatchEvent(newEditEvent(updateSmvOpts(smvOpts, smvOptsAttrs)));
+        this.onSmvOptsInputChange();
     }
     renderSmvContent() {
         const { sMV } = this;
@@ -18314,27 +18344,39 @@ let SampledValueControlElementEditor = class SampledValueControlElementEditor ex
     </div>`;
     }
     renderSmvOptsContent() {
-        const [refreshTime, sampleRate, dataSet, security, synchSourceId] = [
+        const [refreshTime, sampleSynchronized, sampleRate, dataSet, security, timestamp, synchSourceId,] = [
             'refreshTime',
+            'sampleSynchronized',
             'sampleRate',
             'dataSet',
             'security',
+            'timestamp',
             'synchSourceId',
         ].map(attr => { var _a, _b; return (_b = (_a = this.element.querySelector('SmvOpts')) === null || _a === void 0 ? void 0 : _a.getAttribute(attr)) !== null && _b !== void 0 ? _b : null; });
-        return y `<h3>'publisher.smv.smvopts'</h3>
+        return y `<div class="content smvopts">
+      <h3>'Sampled Value Options'</h3>
       ${Object.entries({
             refreshTime,
+            sampleSynchronized,
             sampleRate,
             dataSet,
             security,
+            timestamp,
             synchSourceId,
         }).map(([key, value]) => y `<oscd-checkbox
             label="${key}"
             .maybeValue=${value}
             nullable
             helper="scl.key"
-            disabled
-          ></oscd-checkbox>`)}`;
+            @input=${this.onSmvOptsInputChange}
+          ></oscd-checkbox>`)}<mwc-button
+        class="save"
+        label="save"
+        icon="save"
+        ?disabled=${!this.smvOptsDiff}
+        @click=${() => this.saveSmvOptsChanges()}
+      ></mwc-button>
+    </div>`;
     }
     renderOtherElements() {
         return y `<div class="content">
@@ -18497,8 +18539,14 @@ __decorate([
     t$2()
 ], SampledValueControlElementEditor.prototype, "sMVdiff", void 0);
 __decorate([
+    t$2()
+], SampledValueControlElementEditor.prototype, "smvOptsDiff", void 0);
+__decorate([
     e$4('.content.smv > oscd-textfield')
 ], SampledValueControlElementEditor.prototype, "sMVInputs", void 0);
+__decorate([
+    e$4('.content.smvopts > oscd-checkbox')
+], SampledValueControlElementEditor.prototype, "smvOptsInputs", void 0);
 __decorate([
     i$3('#instType')
 ], SampledValueControlElementEditor.prototype, "instType", void 0);

@@ -262,9 +262,10 @@ export class GseControlElementEditor extends LitElement {
   }
 
   private renderGseControlContent(): TemplateResult {
-    const [name, desc, type, appID, fixedOffs, securityEnabled] = [
+    const [name, desc, confRev, type, appID, fixedOffs, securityEnabled] = [
       'name',
       'desc',
+      'confRev',
       'type',
       'appID',
       'fixedOffs',
@@ -289,7 +290,7 @@ export class GseControlElementEditor extends LitElement {
         required
         pattern="${patterns.asciName}"
         maxLength="${maxLength.cbName}"
-        mimLength="0"
+        minLength="0"
         dialogInitialFocus
         @input=${this.onGSEControlInputChange}
       ></scl-text-field>
@@ -311,6 +312,15 @@ export class GseControlElementEditor extends LitElement {
         .selectOptions=${['GOOSE', 'GSSE']}
         @input=${this.onGSEControlInputChange}
       ></scl-select>
+      <scl-text-field
+        class="input gsecontrol"
+        label="confRev"
+        .value=${confRev}
+        supportingText="Configuration Revision"
+        pattern="${patterns.unsigned}"
+        nullable
+        @input=${this.onGSEControlInputChange}
+      ></scl-text-field>
       <scl-text-field
         class="input gsecontrol"
         label="appID"

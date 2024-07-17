@@ -347,6 +347,7 @@ export class SampledValueControlElementEditor extends LitElement {
     const [
       name,
       desc,
+      confRev,
       multicast,
       smvID,
       smpMod,
@@ -356,6 +357,7 @@ export class SampledValueControlElementEditor extends LitElement {
     ] = [
       'name',
       'desc',
+      'confRev',
       'multicast',
       'smvID',
       'smpMod',
@@ -393,6 +395,15 @@ export class SampledValueControlElementEditor extends LitElement {
             supportingText="Whether Sample Value Stream is multicast"
             @input="${this.onSampledValueControlInputChange}"
           ></scl-checkbox>`}
+      <scl-text-field
+        class="input gsecontrol"
+        label="confRev"
+        .value=${confRev}
+        supportingText="Configuration Revision"
+        pattern="${patterns.unsigned}"
+        nullable
+        @input=${this.onSampledValueControlInputChange}
+      ></scl-text-field>
       <scl-text-field
         class="smvcontrol attribute"
         label="smvID"

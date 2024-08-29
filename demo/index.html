@@ -13,7 +13,18 @@
     {"name": "Publisher", "translations": {"de": "Kontroll-Block"}, "icon": "publish", "active": true, "src": "/dist/oscd-publisher.js"}
   ]
 }'></open-scd>
-
+<script>
+  const _customElementsDefine = window.customElements.define;
+  window.customElements.define = (name, cl, conf) => {
+    if (!customElements.get(name)) {
+      try {
+        _customElementsDefine.call(window.customElements, name, cl, conf);
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+  };
+</script>
 <script type="module">
 import '@openscd/open-scd-core/open-scd.js';
 

@@ -271,7 +271,7 @@ export class DataSetElementEditor extends LitElement {
     return html`<action-list
       class="list fcda"
       .items=${items}
-      height="100"
+      height="84"
       filterable
       searchhelper="Filter Data"
     ></action-list>`;

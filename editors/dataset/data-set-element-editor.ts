@@ -260,10 +260,10 @@ export class DataSetElementEditor extends LitElement {
         .join(' > ');
 
       return {
-        headline: `${doName}${daName ? `.${daName} [${fc}]` : ` [${fc}]`}${
-          description ? ` (${description})` : ''
+        headline: `${ldInst}/${prefix}${lnClass}${lnInst}.${doName}${
+          daName ? `.${daName} [${fc}]` : ` [${fc}]`
         }`,
-        supportingText: `${ldInst}/${prefix}${lnClass}${lnInst}`,
+        supportingText: description,
         actions,
       };
     });
@@ -271,6 +271,7 @@ export class DataSetElementEditor extends LitElement {
     return html`<action-list
       class="list fcda"
       .items=${items}
+      height="100"
       filterable
       searchhelper="Filter Data"
     ></action-list>`;

@@ -5,6 +5,7 @@ import { expect, fixture, html } from '@open-wc/testing';
 import { SinonSpy, spy } from 'sinon';
 
 import {
+  isInsert,
   isRemove,
   isUpdate,
 } from '@openenergytools/scl-lib/dist/foundation/utils.js';
@@ -38,13 +39,14 @@ describe('ReportControl element editor component', () => {
     editor.reportControlInputs![1].nullSwitch?.click();
     await editor.updateComplete;
 
-    editor.reportControlInputs![2].value = 'false';
-    editor.reportControlInputs![3].value = 'someOtherID';
-    editor.reportControlInputs![4].value = 'false';
+    editor.reportControlInputs![2].value = '40001';
+    editor.reportControlInputs![3].value = 'false';
+    editor.reportControlInputs![4].value = 'someOtherID';
+    editor.reportControlInputs![5].value = 'false';
     editor.reportControlInputs![5].nullSwitch?.click();
     await editor.updateComplete;
 
-    editor.reportControlInputs![6].value = '43';
+    editor.reportControlInputs![7].value = '43';
 
     editor.rptEnabledInput.nullSwitch?.click();
     await editor.updateComplete;
@@ -63,7 +65,7 @@ describe('ReportControl element editor component', () => {
     expect(update.attributes).to.deep.equal({
       name: 'SomeNewName',
       desc: null,
-      confRev: '10053',
+      confRev: '40001',
       rptID: 'someOtherID',
       buffered: 'false',
       indexed: 'false',
@@ -132,5 +134,99 @@ describe('ReportControl element editor component', () => {
       period: 'false',
       gi: null,
     });
+  });
+
+  it('allows to create the TrgOps child element', async () => {
+    reportControl = new DOMParser()
+      .parseFromString(reportControlDoc, 'application/xml')
+      .querySelector('ReportControl[name="rp3"]')!;
+
+    editor = await fixture(
+      html`<report-control-element-editor
+        .element="${reportControl}"
+      ></report-control-element-editor>`
+    );
+
+    editor.trgOpsInputs![1].nullSwitch?.click();
+    editor.trgOpsInputs![1].value = 'true';
+    await editor.updateComplete;
+
+    editor.trgOpsInputs![2].nullSwitch?.click();
+    editor.trgOpsInputs![2].value = 'true';
+    await editor.updateComplete;
+
+    await editor.updateComplete;
+    editor.trgOpsSave.click();
+
+    expect(editEvent).to.be.calledOnce;
+    expect(editEvent.args[0][0].detail).to.satisfy(isInsert);
+
+    const insert = editEvent.args[0][0].detail;
+    expect(insert.parent.tagName).to.equal('ReportControl');
+    expect(insert.node.tagName).to.equal('TrgOps');
+    expect(insert.node.hasAttribute('qchg')).to.equal(true);
+    expect(insert.node.hasAttribute('dupd')).to.equal(true);
+  });
+
+  it('allows to create the OptFields child element', async () => {
+    reportControl = new DOMParser()
+      .parseFromString(reportControlDoc, 'application/xml')
+      .querySelector('ReportControl[name="rp3"]')!;
+
+    editor = await fixture(
+      html`<report-control-element-editor
+        .element="${reportControl}"
+      ></report-control-element-editor>`
+    );
+
+    editor.optFieldsInputs![1].nullSwitch?.click();
+    editor.optFieldsInputs![1].value = 'true';
+    await editor.updateComplete;
+
+    editor.optFieldsInputs![2].nullSwitch?.click();
+    editor.optFieldsInputs![2].value = 'true';
+    await editor.updateComplete;
+
+    await editor.updateComplete;
+    editor.optFieldsSave.click();
+
+    expect(editEvent).to.be.calledOnce;
+    expect(editEvent.args[0][0].detail).to.satisfy(isInsert);
+
+    const insert = editEvent.args[0][0].detail;
+    expect(insert.parent.tagName).to.equal('ReportControl');
+    expect(insert.node.tagName).to.equal('OptFields');
+    expect(insert.node.hasAttribute('timeStamp')).to.equal(true);
+    expect(insert.node.hasAttribute('dataSet')).to.equal(true);
+  });
+
+  it('correctly orders TrgOps child element when OptFields inserted first', async () => {
+    reportControl = new DOMParser()
+      .parseFromString(reportControlDoc, 'application/xml')
+      .querySelector('ReportControl[name="rp4"]')!;
+
+    editor = await fixture(
+      html`<report-control-element-editor
+        .element="${reportControl}"
+      ></report-control-element-editor>`
+    );
+
+    editor.trgOpsInputs![1].nullSwitch?.click();
+    editor.trgOpsInputs![1].value = 'true';
+    await editor.updateComplete;
+
+    editor.trgOpsInputs![2].nullSwitch?.click();
+    editor.trgOpsInputs![2].value = 'true';
+    await editor.updateComplete;
+
+    editor.trgOpsSave.click();
+    await editor.updateComplete;
+
+    expect(editEvent).to.be.calledOnce;
+
+    const edit = editEvent.getCall(0).args[0].detail;
+    expect(edit).to.satisfy(isInsert);
+    expect(edit.parent.tagName).to.equal('ReportControl');
+    expect(edit.reference.tagName).to.equal('OptFields');
   });
 });

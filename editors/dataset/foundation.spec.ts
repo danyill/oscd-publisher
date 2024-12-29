@@ -226,9 +226,12 @@ describe('Descriptions for FCDAs', () => {
     });
 
     it('provides nested SDI desc', () => {
-      const fcda = Array.from(doc.querySelectorAll('DataSet > FCDA')!)[11];
+      const fcda = Array.from(doc.querySelectorAll('DataSet > FCDA')!)[17];
       expect(getFcdaInstDesc(fcda)).to.deep.equal({
-        SDI: ['Phase A', 'Something'],
+        DAI: 'fundamental',
+        LDevice: 'First logical device',
+        LN: 'Line',
+        SDI: ['Phase C', 'complex value', 'magnitude'],
       });
     });
 

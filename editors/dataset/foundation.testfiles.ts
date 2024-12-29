@@ -29,6 +29,7 @@ export const fcdaDescriptions = `
                             <FCDA ldInst="ldInst2" prefix="prefix" lnClass="MMXU" lnInst="3" doName="PhV.phsA" daName="nothingreally" fc="MX" />
                             <FCDA ldInst="ldInst2" prefix="prefix" lnClass="MMXU" lnInst="3" doName="PhV.phsA" fc="MX" />
                             <FCDA ldInst="ldInst999" prefix="prefix" lnClass="MMXU" lnInst="3" doName="PhV.phsA" fc="MX" />
+                            <FCDA ldInst="ldInst1" prefix="prefix" lnClass="MMXU" lnInst="1" doName="PhV.phsC" daName="cVal.mag.f" fc="MX" />
                         </DataSet>
                         <DOI name="Beh" desc="Behaviour">
                             <DAI name="stVal" desc="State"/>
@@ -47,6 +48,13 @@ export const fcdaDescriptions = `
                                 </DAI>
                             </SDI>
                             <SDI name="phsB" desc="Phase B"></SDI>
+                            <SDI name="phsC" desc="Phase C">
+                                <SDI name="cVal" desc="complex value">
+                                    <SDI name="mag" desc="magnitude">
+                                        <DAI name="f" desc="fundamental" />
+                                    </SDI>
+                                </SDI>
+                            </SDI>
                         </DOI>
                     </LN>
                 </LDevice>

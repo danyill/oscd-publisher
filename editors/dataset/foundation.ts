@@ -188,6 +188,7 @@ export function getFcdaInstDesc(fcda: Element): fcdaDesc {
   descs = { ...descs, ...(lnDesc && lnDesc !== '' && { LN: lnDesc }) };
 
   const doNames = doName!.split('.');
+  const daNames = daName?.split('.');
 
   const doi = anyLn.querySelector(`:scope > DOI[name="${doNames[0]}"`);
 
@@ -203,32 +204,37 @@ export function getFcdaInstDesc(fcda: Element): fcdaDesc {
   descs = { ...descs, ...(doiDesc && doiDesc !== '' && { DOI: doiDesc }) };
 
   let previousDI: Element = doi;
-  doNames.slice(1).forEach(sdiName => {
-    const sdi = previousDI.querySelector(`:scope > SDI[name="${sdiName}"]`);
-    if (sdi) previousDI = sdi;
-    let sdiDesc = sdi?.getAttribute('desc');
+  const daAsSDI = daNames ? daNames.slice(0, daNames.length - 1) : [];
+  doNames
+    .concat(daAsSDI)
+    .slice(1)
+    .forEach(sdiName => {
+      const sdi = previousDI.querySelector(`:scope > SDI[name="${sdiName}"]`);
+      if (sdi) previousDI = sdi;
+      let sdiDesc = sdi?.getAttribute('desc');
 
-    if (!sdiDesc) {
-      sdiDesc =
-        sdi?.querySelector(':scope > DAI[name="d"] > Val')?.textContent ?? null;
-    }
-    if (!('SDI' in descs)) {
-      descs = {
-        ...descs,
-        ...(sdiDesc && sdiDesc !== '' && { SDI: [sdiDesc] }),
-      };
-    } else if (sdiDesc) descs.SDI!.push(sdiDesc);
-  });
+      if (!sdiDesc) {
+        sdiDesc =
+          sdi?.querySelector(':scope > DAI[name="d"] > Val')?.textContent ??
+          null;
+      }
+      if (!('SDI' in descs)) {
+        descs = {
+          ...descs,
+          ...(sdiDesc && sdiDesc !== '' && { SDI: [sdiDesc] }),
+        };
+      } else if (sdiDesc) descs.SDI!.push(sdiDesc);
+    });
 
-  if (!daName) return descs;
-
-  const daNames = daName?.split('.');
-  // For structured data types which are dot separated not supported
-  const dai = previousDI.querySelector(`:scope > DAI[name="${daNames[0]}"]`);
-
-  const daiDesc = dai?.getAttribute('desc');
-  descs = { ...descs, ...(daiDesc && daiDesc !== '' && { DAI: daiDesc }) };
+  if (!daName || !daNames) return descs;
 
   // ix and array elements not supported
+  const lastdaName = daNames?.slice(daNames.length - 1);
+  const dai = previousDI.querySelector(`:scope > DAI[name="${lastdaName}"]`);
+  if (!dai) return descs;
+
+  const daiDesc = dai.getAttribute('desc');
+  descs = { ...descs, ...(daiDesc && daiDesc !== '' && { DAI: daiDesc }) };
+
   return descs;
 }

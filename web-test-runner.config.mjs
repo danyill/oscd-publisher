@@ -19,7 +19,33 @@ const filteredLogs = [
   'mwc-list-item scheduled an update',
 ];
 
-const browsers = [playwrightLauncher({ product: 'chromium' })];
+const browsers = [
+  playwrightLauncher({
+    product: 'chromium',
+    launchOptions: {
+      args: [
+        '--font-render-hinting=none',
+        '--disable-skia-runtime-opts',
+        '--disable-font-subpixel-positioning',
+        '--disable-lcd-text',
+        '--disable-gpu',
+      ],
+    },
+  }),
+];
+
+const customElementsScript = `<script>
+const _customElementsDefine = window.customElements.define;
+window.customElements.define = (name, cl, conf) => {
+  if (!customElements.get(name)) {
+    try {
+      _customElementsDefine.call(window.customElements, name, cl, conf);
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+};
+</script>`;
 
 function defaultGetImageDiff({ baselineImage, image, options }) {
   let error = '';
@@ -76,6 +102,9 @@ export default /** @type {import("@web/test-runner").TestRunnerConfig} */ ({
 
   files: 'dist/**/*.spec.js',
 
+  testRunnerHtml: testFramework =>
+    `${customElementsScript}<script type="module" src="${testFramework}"></script>`,
+
   groups: [
     {
       name: 'visual',
@@ -122,25 +151,23 @@ export default /** @type {import("@web/test-runner").TestRunnerConfig} */ ({
             });
             observer.observe(document.body, {childList: true, subtree:true});
             </script>
-            <script>
-              const _customElementsDefine = window.customElements.define;
-              window.customElements.define = (name, cl, conf) => {
-                if (!customElements.get(name)) {
-                  try {
-                    _customElementsDefine.call(window.customElements, name, cl, conf);
-                  } catch (e) {
-                    console.warn(e);
-                  }
-                }
-              };
+            ${customElementsScript}
+            <script defer>
+              (async () => {
+                await document.fonts.ready;
+              })();
             </script>
             <style>
             * {
               margin: 0px;
               padding: 0px;
               --mdc-icon-font: 'Material Symbols Outlined';
+              -webkit-font-smoothing: none; 
+              font-kerning: none; 
+              text-rendering: geometricPrecision;
+              font-variant-ligatures: none;
+              letter-spacing: 0.01em
             }
-
             body {
               background: white;
             }

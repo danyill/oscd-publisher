@@ -78,6 +78,7 @@ describe('DataSet element editor', () => {
     await timeout(300); // await menu to be opened
     await sendMouse({ type: 'click', position: [740, 700] }); // click on move up
     await editor.updateComplete;
+    await timeout(200);
 
     const toBeMovedFCDA = dataSet.querySelectorAll(':scope > FCDA')[1];
     const reference = toBeMovedFCDA.previousElementSibling;
@@ -98,6 +99,7 @@ describe('DataSet element editor', () => {
     await timeout(300); // await menu to be opened
     await sendMouse({ type: 'click', position: [740, 780] }); // click on move down
     await editor.updateComplete;
+    await timeout(200);
 
     const toBeMovedFCDA = dataSet.querySelectorAll(':scope > FCDA')[1];
     const reference = toBeMovedFCDA.nextElementSibling?.nextElementSibling;

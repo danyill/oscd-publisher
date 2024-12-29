@@ -159,12 +159,15 @@ export function getFcdaInstDesc(fcda: Element): fcdaDesc {
   );
 
   const ied = fcda.closest('IED')!;
+  if (!ied) return {};
 
   const anyLn = Array.from(
     ied.querySelectorAll(
-      `LDevice[inst="${fcda.getAttribute(
+      `:scope > AccessPoint > Server > LDevice[inst="${fcda.getAttribute(
         'ldInst'
-      )}"] > LN, LDevice[inst="${fcda.getAttribute('ldInst')}"] LN0`
+      )}"] > LN, :scope > AccessPoint > Server > LDevice[inst="${fcda.getAttribute(
+        'ldInst'
+      )}"] > LN0`
     )
   ).find(
     lN =>
@@ -179,13 +182,14 @@ export function getFcdaInstDesc(fcda: Element): fcdaDesc {
   let descs: fcdaDesc = {};
 
   const ldDesc = anyLn.closest('LDevice')!.getAttribute('desc');
-  const lnDesc = anyLn.getAttribute('desc');
   descs = { ...descs, ...(ldDesc && ldDesc !== '' && { LDevice: ldDesc }) };
+
+  const lnDesc = anyLn.getAttribute('desc');
   descs = { ...descs, ...(lnDesc && lnDesc !== '' && { LN: lnDesc }) };
 
   const doNames = doName!.split('.');
 
-  const doi = anyLn.querySelector(`DOI[name="${doNames[0]}"`);
+  const doi = anyLn.querySelector(`:scope > DOI[name="${doNames[0]}"`);
 
   if (!doi) return descs;
 
@@ -200,9 +204,14 @@ export function getFcdaInstDesc(fcda: Element): fcdaDesc {
 
   let previousDI: Element = doi;
   doNames.slice(1).forEach(sdiName => {
-    const sdi = previousDI.querySelector(`SDI[name="${sdiName}"]`);
+    const sdi = previousDI.querySelector(`:scope > SDI[name="${sdiName}"]`);
     if (sdi) previousDI = sdi;
-    const sdiDesc = sdi?.getAttribute('desc');
+    let sdiDesc = sdi?.getAttribute('desc');
+
+    if (!sdiDesc) {
+      sdiDesc =
+        sdi?.querySelector(':scope > DAI[name="d"] > Val')?.textContent ?? null;
+    }
     if (!('SDI' in descs)) {
       descs = {
         ...descs,
@@ -214,10 +223,12 @@ export function getFcdaInstDesc(fcda: Element): fcdaDesc {
   if (!daName) return descs;
 
   const daNames = daName?.split('.');
-  const dai = previousDI.querySelector(`DAI[name="${daNames[0]}"]`);
+  // For structured data types which are dot separated not supported
+  const dai = previousDI.querySelector(`:scope > DAI[name="${daNames[0]}"]`);
 
   const daiDesc = dai?.getAttribute('desc');
   descs = { ...descs, ...(daiDesc && daiDesc !== '' && { DAI: daiDesc }) };
 
+  // ix and array elements not supported
   return descs;
 }

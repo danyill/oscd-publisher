@@ -1,7 +1,7 @@
 import { identity } from '@openenergytools/scl-lib';
 import { Tree } from '@openscd/oscd-tree-grid';
 
-function dataAttributeObject(da: Element, dai?: Element): Tree {
+function dataAttributeObject(da: Element, daiOrsdi?: Element): Tree {
   const tree: Tree = {};
   const children: Tree = {};
 
@@ -10,14 +10,24 @@ function dataAttributeObject(da: Element, dai?: Element): Tree {
   );
   if (!daType) return tree;
 
-  Array.from(daType.querySelectorAll('BDA')).forEach(bda => {
-    const desc = dai?.getAttribute('desc');
-    const bdaName = `${bda.getAttribute('name') ?? 'UNKNOWN_BDA'}${
-      desc ? ` (${desc})` : ''
-    }`;
+  Array.from(daType.querySelectorAll(':scope > BDA')).forEach(bda => {
+    const name = bda.getAttribute('name');
+    const sdiOrDai =
+      daiOrsdi?.querySelector(
+        `:scope > SDI[name="${name}"], :scope > DAI[name="${name}"]`
+      ) ?? undefined;
+    let desc = sdiOrDai?.getAttribute('desc');
+
+    if (!desc) {
+      desc =
+        sdiOrDai?.querySelector(':scope > DAI[name="d"] > Val')?.textContent ??
+        null;
+    }
+
+    const bdaName = `${name ?? 'UNKNOWN_BDA'}${desc ? ` (${desc})` : ''}`;
     const id = `BDA: ${identity(bda)}`;
     if (bda.getAttribute('bType') === 'Struct') {
-      children[id] = dataAttributeObject(bda);
+      children[id] = dataAttributeObject(bda, sdiOrDai);
       children[id]!.text = bdaName;
     } else {
       children[id] = {};
@@ -38,35 +48,54 @@ function subDataObjectsObject(sdo: Element, sDiOrDai?: Element): Tree {
   );
   if (!doType) return tree;
 
-  Array.from(doType.querySelectorAll('SDO,DA')).forEach(sDoOrDa => {
-    if (sDoOrDa.tagName === 'SDO') {
-      const name = sDoOrDa.getAttribute('name') ?? 'UNKNOWN_SDO';
-      const sdi = sDiOrDai?.querySelector(`SDI[name="${name}"]`) ?? undefined;
-      const desc = sdi?.getAttribute('desc');
+  Array.from(doType.querySelectorAll(':scope > SDO, :scope > DA')).forEach(
+    sDoOrDa => {
+      if (sDoOrDa.tagName === 'SDO') {
+        const name = sDoOrDa.getAttribute('name') ?? 'UNKNOWN_SDO';
+        const sdi =
+          sDiOrDai?.querySelector(`:scope > SDI[name="${name}"]`) ?? undefined;
+        let desc = sdi?.getAttribute('desc');
 
-      const sDoName = `${name}${desc ? ` (${desc})` : ''}`;
-      const id = `SDO: ${identity(sDoOrDa)}`;
-      children[id] = subDataObjectsObject(sDoOrDa, sdi);
-      children[id]!.text = sDoName;
-    } else {
-      const name = sDoOrDa.getAttribute('name') ?? 'UNKNOWN_DA';
-      const dai = sDiOrDai?.querySelector(`DAI[name="${name}"]`) ?? undefined;
-      const desc = dai?.getAttribute('desc');
-      const fc = sDoOrDa.getAttribute('fc') ?? 'UNKNOWN_FC';
+        if (!desc) {
+          desc =
+            sdi?.querySelector(':scope > DAI[name="d"] > Val')?.textContent ??
+            null;
+        }
 
-      const daName = `${name}${fc ? ` - FC: ${fc}` : ''}${
-        desc ? ` (${desc})` : ''
-      }`;
-      const id = `DA: ${identity(sDoOrDa)}`;
-      if (sDoOrDa.getAttribute('bType') === 'Struct') {
-        children[id] = dataAttributeObject(sDoOrDa, dai);
-        children[id]!.text = daName;
+        const sDoName = `${name}${desc ? ` (${desc})` : ''}`;
+        const id = `SDO: ${identity(sDoOrDa)}`;
+        children[id] = subDataObjectsObject(sDoOrDa, sdi);
+        children[id]!.text = sDoName;
       } else {
-        children[id] = {};
-        children[id]!.text = daName;
+        const name = sDoOrDa.getAttribute('name') ?? 'UNKNOWN_SDO_OR_DA';
+        const sdiOrDai =
+          sDiOrDai?.querySelector(
+            `:scope > SDI[name="${name}"], :scope > DAI[name="${name}"]`
+          ) ?? undefined;
+        let desc = sdiOrDai?.getAttribute('desc');
+
+        if (!desc && sdiOrDai?.tagName === 'SDI') {
+          desc =
+            sdiOrDai?.querySelector(':scope > DAI[name="d"] > Val')
+              ?.textContent ?? null;
+        }
+
+        const fc = sDoOrDa.getAttribute('fc') ?? 'UNKNOWN_FC';
+
+        const daName = `${name}${fc ? ` - FC: ${fc}` : ''}${
+          desc ? ` (${desc})` : ''
+        }`;
+        const id = `DA: ${identity(sDoOrDa)}`;
+        if (sDoOrDa.getAttribute('bType') === 'Struct') {
+          children[id] = dataAttributeObject(sDoOrDa, sdiOrDai);
+          children[id]!.text = daName;
+        } else {
+          children[id] = {};
+          children[id]!.text = daName;
+        }
       }
     }
-  });
+  );
 
   tree.children = children;
   return tree;
@@ -81,42 +110,47 @@ function dataObjectObject(dO: Element, dOI?: Element): Tree {
   );
   if (!doType) return tree;
 
-  Array.from(doType.querySelectorAll('SDO,DA')).forEach(sDoOrDa => {
-    if (sDoOrDa.tagName === 'SDO') {
-      const name = sDoOrDa.getAttribute('name') ?? 'UNKNOWN_SDO';
-      const sDi = dOI?.querySelector(`SDI[name="${name}"]`) ?? undefined;
-      let doiDesc = dOI?.getAttribute('desc');
+  Array.from(doType.querySelectorAll(':scope > SDO, :scope > DA')).forEach(
+    sDoOrDa => {
+      if (sDoOrDa.tagName === 'SDO') {
+        const name = sDoOrDa.getAttribute('name') ?? 'UNKNOWN_SDO';
+        const sDi =
+          dOI?.querySelector(`:scope > SDI[name="${name}"]`) ?? undefined;
 
-      if (!doiDesc) {
-        doiDesc =
-          dOI?.querySelector(':scope > DAI[name="d"] > Val')?.textContent ??
-          null;
-      }
+        let sDiDesc = sDi?.getAttribute('desc');
 
-      const sDoName = `${name}${doiDesc ? ` (${doiDesc})` : ''}`;
+        if (!sDiDesc) {
+          sDiDesc =
+            sDi?.querySelector(':scope > DAI[name="d"] > Val')?.textContent ??
+            null;
+        }
 
-      const id = `SDO: ${identity(sDoOrDa)}`;
-      children[id] = subDataObjectsObject(sDoOrDa, sDi);
-      children[id]!.text = sDoName;
-    } else {
-      const name = sDoOrDa.getAttribute('name') ?? 'UNKNOWN_DA';
-      const dAi = dOI?.querySelector(`DAI[name="${name}"]`) ?? undefined;
-      const desc = dAi?.getAttribute('desc');
-      const fc = sDoOrDa.getAttribute('fc') ?? 'UNKNOWN_FC';
+        const sDoName = `${name}${sDiDesc ? ` (${sDiDesc})` : ''}`;
 
-      const daName = `${name}${fc ? ` - FC: ${fc}` : ''}${
-        desc ? ` (${desc})` : ''
-      }`;
-      const id = `DA: ${identity(sDoOrDa)}`;
-      if (sDoOrDa.getAttribute('bType') === 'Struct') {
-        children[id] = dataAttributeObject(sDoOrDa, dAi);
-        children[id]!.text = daName;
+        const id = `SDO: ${identity(sDoOrDa)}`;
+        children[id] = subDataObjectsObject(sDoOrDa, sDi);
+        children[id]!.text = sDoName;
       } else {
-        children[id] = {};
-        children[id]!.text = daName;
+        const name = sDoOrDa.getAttribute('name') ?? 'UNKNOWN_DA';
+        const dAi =
+          dOI?.querySelector(`:scope > DAI[name="${name}"]`) ?? undefined;
+        const desc = dAi?.getAttribute('desc');
+        const fc = sDoOrDa.getAttribute('fc') ?? 'UNKNOWN_FC';
+
+        const daName = `${name}${fc ? ` - FC: ${fc}` : ''}${
+          desc ? ` (${desc})` : ''
+        }`;
+        const id = `DA: ${identity(sDoOrDa)}`;
+        if (sDoOrDa.getAttribute('bType') === 'Struct') {
+          children[id] = dataAttributeObject(sDoOrDa, dAi);
+          children[id]!.text = daName;
+        } else {
+          children[id] = {};
+          children[id]!.text = daName;
+        }
       }
     }
-  });
+  );
 
   tree.children = children;
   return tree;
@@ -135,7 +169,10 @@ function anyLnObject(anyLn: Element): Tree {
     const name = dO.getAttribute('name') ?? 'UNKNOWN_DO';
     const dOi =
       anyLn.querySelector(`:scope > DOI[name="${name}"]`) ?? undefined;
-    const desc = dOi?.getAttribute('desc');
+    let desc = dOi?.getAttribute('desc');
+    if (!desc) {
+      desc = dOi?.querySelector(':scope > DAI[name="d"] > Val')?.textContent;
+    }
 
     const doName = `${name}${desc ? ` (${desc})` : ''}`;
 
